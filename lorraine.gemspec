@@ -16,5 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = Lorraine::VERSION
   
   gem.add_dependency('serialport', '>= 1.1.0')
+  gem.add_dependency('colorize')
+  # gem.add_dependency('colorist')
   
 end

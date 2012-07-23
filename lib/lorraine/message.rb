@@ -43,7 +43,7 @@ module Lorraine
     end
     
     def to_binary
-      packet = [self.command_id, self.pixel, self.red, self.green, self.blue]
+      packet = [self.command_id, self.pixel, self.red.to_i, self.green.to_i, self.blue.to_i]
       packet.pack(Lorraine::Message.format)
     end
     

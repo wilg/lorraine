@@ -13,17 +13,39 @@ module Lorraine
       # puts "binary: #{c.to_binary}"
       # puts "back in: #{Lorraine::Message.decode c.to_binary}"
       
-      connection = Lorraine::Connection.new "/dev/tty.usbserial-A100A9J6"
+      connection = Lorraine::Connection.new "/dev/tty.usbserial-A6008RQE"
       puts "Waiting 5 seconds..."
       sleep 5
       puts "Writing..."
-      # connection.write_message c
-      connection.display_pixels [[4096, 0, 0], [0, 4096, 0], [0, 0, 4096]]
+
+
+      img = Lorraine::Image.new(5, 1)
+      img2 = Lorraine::Image.new(5, 1)
       
-      # while true
-      #   puts "readline: #{connection.port.gets}"
-      #   # printf("%c", connection.port.getc)
-      # end
+      # img.clear!([1, 0, 0])
+      img.rgb_pixels = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1], [0.5, 1, 0.5]]
+      
+      img2.rgb_pixels = [[0, 0, 1], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0]]
+      # img2.clear!([0, 1, 0])
+      
+      
+      # img.rgb_pixels = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1], [0.5, 1, 0.5]]
+      # img.rgb_pixels = [[1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0]]
+      
+      # full_colors = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 0], [1, 1, 1]]
+    
+      connection.display_image img
+      
+      # i = 0
+      while true
+        # full_colors.rotate!
+        # img.clear!(full_colors.first)
+        # puts img.rgb_pixels.to_s
+
+        connection.animate_to_image img2, 2, 200
+        connection.animate_to_image img,  2, 200
+        # i += 1
+      end
       connection.sever!
       
     end
