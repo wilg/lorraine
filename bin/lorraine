@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+
+require 'lorraine'
+require 'lorraine/command'
+
+args = ARGV.dup
+ARGV.clear
+command = args.shift.strip rescue nil
+
+Lorraine::Command.run(command, args)
