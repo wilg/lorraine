@@ -33,8 +33,19 @@ module Lorraine
       write_binary_string msg.to_binary
     end
     
-    def read
-      m = self.port.readlines
+    def display_pixels(pixel_array)
+      commands = []
+      pixel_array.each_with_index do |pixel, i|
+        commands << Lorraine::Message.new(:display_pixel, i, pixel[0], pixel[1], pixel[2])
+      end
+      commands.each do |command|
+        self.write_message command
+        self.read_line
+      end
+    end
+    
+    def read_line
+      m = self.port.gets
       puts "Lorraine::Connection Message: #{m}"
       m
     end
