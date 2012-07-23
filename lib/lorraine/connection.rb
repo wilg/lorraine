@@ -15,7 +15,7 @@ module Lorraine
 
       #params for serial port
       port_str = port  # may be different for you
-      baud_rate = 2000
+      baud_rate = 115200
       # data_bits = 8
       # stop_bits = 1
       # parity = SerialPort::NONE
@@ -29,11 +29,12 @@ module Lorraine
     end
     
     def write_message(msg)
+      puts "Writing message: #{msg}"
       write_binary_string msg.to_binary
     end
     
     def read
-      m = self.port.read
+      m = self.port.readlines
       puts "Lorraine::Connection Message: #{m}"
       m
     end

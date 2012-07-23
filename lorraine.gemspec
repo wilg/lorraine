@@ -14,4 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "lorraine"
   gem.require_paths = ["lib"]
   gem.version       = Lorraine::VERSION
+  
+  gem.add_dependency('serialport', '>= 1.1.0')
+  
 end

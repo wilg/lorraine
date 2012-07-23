@@ -2,11 +2,15 @@ module Lorraine
   
   class Message
     
-    # Command ID   - 16 bit signed integer (s)
-    # Address      - 16 bit signed integer (s)
-    # Red value    - 16 bit signed integer (s)
-    # Green value  - 16 bit signed integer (s)
-    # Blue value   - 16 bit signed integer (s)
+    # Command ID   - 16 bit unsigned integer (S)
+    # Address      - 16 bit unsigned integer (S)
+    # Red value    - 16 bit unsigned integer (S)
+    # Green value  - 16 bit unsigned integer (S)
+    # Blue value   - 16 bit unsigned integer (S)
+    
+    def self.format
+      "nnnnn"
+    end
     
     def initialize(command = nil, pixel = nil, red = nil, green = nil, blue = nil)
       self.command = :display_frame
@@ -18,10 +22,10 @@ module Lorraine
     
     def self.decode(binary_string)
       m = Lorraine::Message.new
-      m.command_id, m.pixel, m.red, m.green, m.blue = binary_string.unpack("sssss")
+      m.command_id, m.pixel, m.red, m.green, m.blue = binary_string.unpack(Lorraine::Message.format)
       m
     end
-    
+        
     attr_accessor :red
     attr_accessor :green
     attr_accessor :blue
@@ -40,11 +44,11 @@ module Lorraine
     
     def to_binary
       packet = [self.command_id, self.pixel, self.red, self.green, self.blue]
-      packet.pack("sssss")
+      packet.pack(Lorraine::Message.format)
     end
     
     def to_s
-      "#<Lorraine::Message command=#{command} pixel=#{pixel} r=#{red} g=#{green} b=#{blue}>"
+      "#<Lorraine::Message command=#{command} pixel=#{pixel} r=#{red} g=#{green} b=#{blue} bytes=#{to_binary.length}>"
     end
     
   end
