@@ -12,7 +12,7 @@ module Lorraine
       "nnnnn"
     end
     
-    def initialize(command = nil, pixel = nil, red = nil, green = nil, blue = nil)
+    def initialize(command = 0, pixel = 0, red = 0, green = 0, blue = 0)
       self.command = command
       self.pixel   = pixel
       self.red     = red
@@ -32,7 +32,7 @@ module Lorraine
     attr_accessor :command
     attr_accessor :pixel
     
-    COMMAND_IDS = {display_pixel: 1}
+    COMMAND_IDS = {set_pixel: 1, refresh: 2}
     
     def command_id
       COMMAND_IDS[self.command]

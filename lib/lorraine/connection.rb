@@ -36,8 +36,9 @@ module Lorraine
     def display_pixels(pixel_array)
       commands = []
       pixel_array.each_with_index do |pixel, i|
-        commands << Lorraine::Message.new(:display_pixel, i, pixel[0], pixel[1], pixel[2])
+        commands << Lorraine::Message.new(:set_pixel, i, pixel[0], pixel[1], pixel[2])
       end
+      commands << Lorraine::Message.new(:refresh)
       commands.each do |command|
         self.write_message command
         #self.read_line
