@@ -44,8 +44,8 @@ module Lorraine
     method_option :remote, type: :boolean, aliases: "-r", desc: "Interact over the network.", default: false
     def interactive
       say "Opening a connection to the LED monstrosity...", :yellow
-      # c = Lorraine::Connection.new
-      # sleep 5
+      c = Lorraine::Connection.new
+      sleep 5
       say "... opened.", :green
       while true
         response = ask(">> ")
@@ -54,8 +54,8 @@ module Lorraine
         else
           pixel, r, g, b = response.split(" ")
           puts response
-          # m = Lorraine::Message.new :set_pixel, pixel, (r * 4095).to_i, (g * 4095).to_i, (b * 4095).to_i
-          # c.write_message(m)
+          m = Lorraine::Message.new :set_pixel, pixel, (r * 4095).to_i, (g * 4095).to_i, (b * 4095).to_i
+          c.write_message(m)
         end
       end
     end
