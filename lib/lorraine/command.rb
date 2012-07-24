@@ -51,6 +51,10 @@ module Lorraine
           else
             c.write_message Lorraine::Message.new(:effect, response.split(" ")[1].to_i)
           end
+        elsif response == "defcon"
+          defcon = Lorraine::Image.new(5, 1)
+          defcon.rgb_pixels = [[1, 0, 0], [1, 0.2, 0], [1, 1, 0], [0, 0, 1], [0, 1, 0]]
+          c.display_image defcon
         else
           m = message_from_console_array(response.split(" "))
           c.write_message m
