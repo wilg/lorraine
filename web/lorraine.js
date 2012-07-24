@@ -2,11 +2,13 @@ $(function(){
   
   // Find the host
   //var pathArray = window.location.pathname.split( '/' );
-  var host = getBaseURL() //pathArray[0]; // + "/";
+  var host = getBaseURL() + "faye"; //pathArray[0]; // + "/";
+  host = host.replace("/admin", "");
   
   // alert(host);
     
-  window.faye_client = new Faye.Client(host + "faye");
+  window.faye_client = new Faye.Client(host);
+  console.log("client: "+ host)
 
   window.faye_client.subscribe('/messages', function(message) {
     alert('Got a message: ' + message.text);
@@ -16,6 +18,10 @@ $(function(){
 
 function illuminatePixel(pixel, r, g, b) {
   window.faye_client.publish('/illuminate', [1, pixel, r * 4095, g * 4095, b * 4095]);
+}
+
+function refresh() {
+  window.faye_client.publish('/illuminate', [2]);
 }
 
 function illuminateAll(r, g, b) {
@@ -28,7 +34,8 @@ function illuminateAll(r, g, b) {
 
 
 function colorChanged(color) {
-  illuminateAll(color.rgb[0], color.rgb[1], color.rgb[2])
+  illuminateAll(color.rgb[0], color.rgb[1], color.rgb[2]);
+  refresh();
 }
 
 
