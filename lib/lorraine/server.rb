@@ -12,9 +12,11 @@ module Lorraine
         faye_server = Faye::RackAdapter.new(:mount => '/faye', :timeout => 45)
         faye_server.bind(:publish) do |client_id, channel, data|
           # Process incoming things
+          puts "Received message data: #{data}"
           m = Lorraine::Message.from_packet(data)
-          puts "Received message: #{m}"
+          puts "Interpereted as: #{m}"
           serial_connection.write_message(m)
+          serial_connection.write_message Lorraine::Message.new(:refresh)
         end
         run faye_server
       end
@@ -30,6 +32,8 @@ module Lorraine
     def self.send_message(message, address = "localhost", port = "1964")
       
       faye_json = {channel: "/illuminate", data: message.packet}.to_json
+      
+      puts "sending json: #{faye_json}"
      
       client = HTTPClient.new
       puts client.post("http://#{address}:#{port}/faye", {message: faye_json})

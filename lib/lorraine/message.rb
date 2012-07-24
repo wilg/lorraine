@@ -45,7 +45,7 @@ module Lorraine
     end
     
     def packet
-      [self.command_id, self.pixel, self.red.to_i, self.green.to_i, self.blue.to_i]
+      [self.command_id, self.pixel.to_i, self.red.to_i, self.green.to_i, self.blue.to_i]
     end
     
     def packet=(new_packet)

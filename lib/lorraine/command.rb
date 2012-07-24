@@ -28,7 +28,7 @@ module Lorraine
     method_option :hostname, type: :string, aliases: "-h", desc: "Network hostname.", default: "localhost"
     method_option :port, type: :numeric, aliases: "-h", desc: "Network port.", default: 1964
     def set(pixel, r, g, b)
-      m = Lorraine::Message.new :set_pixel, pixel, (r * 4095).to_i, (g * 4095).to_i, (b * 4095).to_i
+      m = message_from_console_array [pixel, r, g, b]
       if options[:remote]
         Lorraine::Client.send_message(m, options[:hostname], options[:port])
       else
@@ -36,26 +36,37 @@ module Lorraine
         puts "Waiting 5 seconds..."
         sleep 5
         c.write_message(m)
+        c.write_message Lorraine::Message.new(:refresh)
       end
     end
     
     map "i" => :interactive
     desc "interactive", "Interact directly with the connection"
     method_option :remote, type: :boolean, aliases: "-r", desc: "Interact over the network.", default: false
+    method_option :hostname, type: :string, aliases: "-h", desc: "Network hostname.", default: "localhost"
+    method_option :port, type: :numeric, aliases: "-h", desc: "Network port.", default: 1964
     def interactive
-      say "Opening a connection to the LED monstrosity...", :yellow
-      c = Lorraine::Connection.new
-      sleep 5
-      say "... opened.", :green
+      c = nil
+      if options[:remote]
+        say "Let's do this through the ether...", :blue
+      else
+        say "Opening a connection to the LED monstrosity...", :yellow
+        c = Lorraine::Connection.new
+        sleep 5
+        say "... opened.", :green
+      end
       while true
         response = ask(">> ")
         if response == "exit"
           break
         else
-          pixel, r, g, b = response.split(" ")
-          puts response
-          m = Lorraine::Message.new :set_pixel, pixel, (r * 4095).to_i, (g * 4095).to_i, (b * 4095).to_i
-          c.write_message(m)
+          m = message_from_console_array(response.split(" "))
+          if options[:remote]
+            Lorraine::Client.send_message(m, options[:hostname], options[:port])
+          else
+            c.write_message m
+            c.write_message Lorraine::Message.new(:refresh)
+          end
         end
       end
     end
@@ -67,6 +78,12 @@ module Lorraine
       j = c.to_json
       puts "json: #{j}"
       puts Lorraine::Message.from_json j
+    end
+    
+    private
+  
+    def message_from_console_array(arr)
+      Lorraine::Message.new :set_pixel, arr[0].to_i, (arr[1].to_f * 4095).to_i, (arr[2].to_f * 4095).to_i, (arr[3].to_f * 4095).to_i
     end
     
         # 
