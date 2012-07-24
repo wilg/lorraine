@@ -6,7 +6,7 @@ module Lorraine
     
     attr_accessor :port
     
-    def initialize(port = "/dev/ttyUSB0")
+    def initialize(port = Lorraine::Connection.first_available_port)
       
       #simplest ruby program to read from arduino serial, 
       #using the SerialPort gem
@@ -22,6 +22,12 @@ module Lorraine
 
       self.port = SerialPort.new port_str, baud_rate#, data_bits, stop_bits, parity
       
+    end
+    
+    def self.first_available_port
+      p = Dir.glob("/dev/tty.usb*").first
+      raise "No available ports." unless p
+      p
     end
     
     def write_binary_string(binary_string)

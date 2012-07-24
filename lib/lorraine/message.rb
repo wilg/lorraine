@@ -2,6 +2,8 @@ module Lorraine
   
   class Message
     
+    require 'json'
+    
     # Command ID   - 16 bit unsigned integer (S)
     # Address      - 16 bit unsigned integer (S)
     # Red value    - 16 bit unsigned integer (S)
@@ -42,9 +44,30 @@ module Lorraine
       self.command = COMMAND_IDS.invert[id]
     end
     
+    def packet
+      [self.command_id, self.pixel, self.red.to_i, self.green.to_i, self.blue.to_i]
+    end
+    
+    def packet=(new_packet)
+      self.command_id, self.pixel, self.red, self.green, self.blue = new_packet
+    end
+    
+    def self.from_json(json)
+      Lorraine::Message.from_packet JSON.parse(json)
+    end
+    
+    def self.from_packet(p)
+      m = Lorraine::Message.new
+      m.packet = p
+      m
+    end
+    
+    def to_json
+      self.packet.to_json
+    end
+    
     def to_binary
-      packet = [self.command_id, self.pixel, self.red.to_i, self.green.to_i, self.blue.to_i]
-      packet.pack(Lorraine::Message.format)
+      self.packet.pack(Lorraine::Message.format)
     end
     
     def to_s

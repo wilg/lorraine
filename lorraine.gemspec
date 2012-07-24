@@ -17,6 +17,11 @@ Gem::Specification.new do |gem|
   
   gem.add_dependency('serialport', '>= 1.1.0')
   gem.add_dependency('colorize')
+  gem.add_dependency('faye')
+  gem.add_dependency('thor')
+  gem.add_dependency('thin')
+  gem.add_dependency('json_pure')
+  gem.add_dependency('httpclient')
   # gem.add_dependency('colorist')
   
 end
