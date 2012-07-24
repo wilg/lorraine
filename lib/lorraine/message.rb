@@ -34,7 +34,7 @@ module Lorraine
     attr_accessor :command
     attr_accessor :pixel
     
-    COMMAND_IDS = {set_pixel: 1, refresh: 2}
+    COMMAND_IDS = {set_pixel: 1, refresh: 2, effect: 3}
     
     def command_id
       COMMAND_IDS[self.command]

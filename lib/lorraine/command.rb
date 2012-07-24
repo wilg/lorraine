@@ -15,7 +15,7 @@ module Lorraine
     end
     
     desc "server <command>", "install one of the available apps"
-    method_option :port, type: :numeric, aliases: "-p", desc: "Port this server will be at.", default: 1964
+    method_option :port, type: :numeric, aliases: "-p", desc: "Port this server will be at.", default: 3010
     def server(command)
       puts "command: #{command}, options: #{options}"
       if command.to_sym == :start
@@ -26,47 +26,35 @@ module Lorraine
     desc "set <pixel> <r> <g> <b>", "light up a pixel. rgb values from 0.0 - 1.0"
     method_option :remote, type: :boolean, aliases: "-r", desc: "Set the pixel over the network.", default: false
     method_option :hostname, type: :string, aliases: "-h", desc: "Network hostname.", default: "localhost"
-    method_option :port, type: :numeric, aliases: "-h", desc: "Network port.", default: 1964
+    method_option :port, type: :numeric, aliases: "-h", desc: "Network port.", default: 3010
     def set(pixel, r, g, b)
+      c = open_connection(options)
       m = message_from_console_array [pixel, r, g, b]
-      if options[:remote]
-        Lorraine::Client.send_message(m, options[:hostname], options[:port])
-      else
-        c = Lorraine::Connection.new
-        puts "Waiting 5 seconds..."
-        sleep 5
-        c.write_message(m)
-        c.write_message Lorraine::Message.new(:refresh)
-      end
+      c.write_message m
+      c.write_message Lorraine::Message.new(:refresh)
     end
     
     map "i" => :interactive
     desc "interactive", "Interact directly with the connection"
     method_option :remote, type: :boolean, aliases: "-r", desc: "Interact over the network.", default: false
     method_option :hostname, type: :string, aliases: "-h", desc: "Network hostname.", default: "localhost"
-    method_option :port, type: :numeric, aliases: "-h", desc: "Network port.", default: 1964
+    method_option :port, type: :numeric, aliases: "-h", desc: "Network port.", default: 3010
     def interactive
-      c = nil
-      if options[:remote]
-        say "Let's do this through the ether...", :blue
-      else
-        say "Opening a connection to the LED monstrosity...", :yellow
-        c = Lorraine::Connection.new
-        sleep 5
-        say "... opened.", :green
-      end
+      c = open_connection(options)
       while true
         response = ask(">> ")
         if response == "exit"
           break
+        elsif response.include?("effect")
+          if response.include?("off")
+            c.write_message Lorraine::Message.new(:effect, 0)
+          else
+            c.write_message Lorraine::Message.new(:effect, response.split(" ")[1].to_i)
+          end
         else
           m = message_from_console_array(response.split(" "))
-          if options[:remote]
-            Lorraine::Client.send_message(m, options[:hostname], options[:port])
-          else
-            c.write_message m
-            c.write_message Lorraine::Message.new(:refresh)
-          end
+          c.write_message m
+          c.write_message Lorraine::Message.new(:refresh)
         end
       end
     end
@@ -81,6 +69,22 @@ module Lorraine
     end
     
     private
+    
+    def open_connection(options)
+      c = nil
+      if options[:remote]
+        say "Opening a connection through the matrix...", :green
+        c = Lorraine::NetworkConnection.new
+        c.port = options[:port]
+        c.hostname = options[:hostname]
+      else
+        say "Opening a connection to the LED monstrosity...", :yellow
+        c = Lorraine::SerialConnection.new
+        sleep 5
+        say "... and now it's open!", :green
+      end
+      c
+    end
   
     def message_from_console_array(arr)
       Lorraine::Message.new :set_pixel, arr[0].to_i, (arr[1].to_f * 4095).to_i, (arr[2].to_f * 4095).to_i, (arr[3].to_f * 4095).to_i
