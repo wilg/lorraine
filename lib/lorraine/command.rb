@@ -15,7 +15,7 @@ module Lorraine
     end
     
     desc "server <command>", "install one of the available apps"
-    method_option :port, type: :boolean, aliases: "-p", desc: "Port this server will be at.", default: 1964
+    method_option :port, type: :numeric, aliases: "-p", desc: "Port this server will be at.", default: 1964
     def server(command)
       puts "command: #{command}, options: #{options}"
       if command.to_sym == :start
@@ -25,10 +25,12 @@ module Lorraine
     
     desc "set <pixel> <r> <g> <b>", "light up a pixel. rgb values from 0.0 - 1.0"
     method_option :remote, type: :boolean, aliases: "-r", desc: "Set the pixel over the network.", default: false
+    method_option :hostname, type: :string, aliases: "-h", desc: "Network hostname.", default: "localhost"
+    method_option :port, type: :numeric, aliases: "-h", desc: "Network port.", default: 1964
     def set(pixel, r, g, b)
       m = Lorraine::Message.new :set_pixel, pixel, (r * 4095).to_i, (g * 4095).to_i, (b * 4095).to_i
       if options[:remote]
-        Lorraine::Client.send_message(m)
+        Lorraine::Client.send_message(m, options[:hostname], options[:port])
       else
         c = Lorraine::Connection.new
         puts "Waiting 5 seconds..."
